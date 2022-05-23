@@ -28,8 +28,25 @@ module.exports = {
           { model: Product_Categories },
           { model: Warehouse_Products, include: Warehouses },
         ],
+        attributes: [
+          "id",
+          "product_image",
+          "name",
+          "description",
+          "price",
+          "productCategoryId",
+          [
+            sequelize.literal(
+              `(SELECT sum(stock_ready) from warehouse_products WHERE warehouse_products.productId = products.id)`
+            ),
+            "totalStock",
+          ],
+        ],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -148,7 +165,13 @@ module.exports = {
           },
         },
       });
-      res.status(200).send({ rows, count });
+
+      count = 1;
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
       console.log(err);
@@ -177,7 +200,11 @@ module.exports = {
         ],
         order: [["name", "ASC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
@@ -205,7 +232,11 @@ module.exports = {
         ],
         order: [["name", "DESC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -231,7 +262,11 @@ module.exports = {
         ],
         order: [["price", "ASC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -257,7 +292,11 @@ module.exports = {
         ],
         order: [["price", "DESC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }

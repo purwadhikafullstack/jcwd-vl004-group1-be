@@ -590,12 +590,41 @@ module.exports = {
   },
   cancelTransactions: async (req, res) => {
     try {
-      const { userId, invoiceHeaderId } = req.body;
+      const { invoiceHeaderId } = req.body;
+
+      const selectedInvoiceData = await Invoice_Details.findAll({
+        where: { invoiceHeaderId },
+        attributes: ["invoiceHeaderId", "quantity", "productId", "warehouseId"],
+        include: {
+          model: Products,
+          include: {
+            model: Warehouse_Products,
+            attributes: ["stock_reserved"],
+          },
+        },
+      });
+
+      selectedInvoiceData.forEach(async (item) => {
+        await Warehouse_Products.update(
+          {
+            stock_reserved:
+              item.product.warehouse_products[0].stock_reserved - item.quantity,
+          },
+          {
+            where: { productId: item.productId, warehouseId: item.warehouseId },
+          }
+        );
+      });
 
       await Invoice_Headers.destroy({
-        where: { userId, invoiceHeaderId },
+        where: { id: invoiceHeaderId },
       });
-      res.status(200).send(`invoice ID ${invoiceHeaderId} has been deleted`);
+
+      await Invoice_Details.destroy({
+        where: { invoiceHeaderId },
+      });
+
+      res.status(200).send(selectedInvoiceData);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

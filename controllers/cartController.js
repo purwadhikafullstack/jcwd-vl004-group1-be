@@ -51,8 +51,7 @@ module.exports = {
           { model: Shipment_Masters },
           { model: Payment_Options },
         ],
-        where: { userId },
-        status: "unpaid",
+        where: { userId, status: "unpaid" },
       });
 
       if (unpaidInvoice) {

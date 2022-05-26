@@ -12,6 +12,7 @@ const Warehouse_Products = require("../models/Warehouse_Products");
 module.exports = {
   getPayment: async (req, res) => {
     try {
+      let { sortValue } = req.body;
       let payment = await Payments.findAll({
         include: [
           {
@@ -37,78 +38,12 @@ module.exports = {
             ],
           },
         ],
-        order: [["id", "ASC"]],
+        order: [sortValue.split(",")],
       });
+      console.log(payment);
       res.status(200).send(payment);
     } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getPaymentSortAsc: async (req, res) => {
-    try {
-      let payment = await Payments.findAll({
-        include: [
-          {
-            model: Invoice_Headers,
-            required: true,
-            include: [
-              {
-                model: Invoice_Details,
-                required: true,
-              },
-              {
-                model: Warehouses,
-                required: true,
-              },
-              {
-                model: User_Addresses,
-                required: true,
-              },
-              {
-                model: Users,
-                required: true,
-              },
-            ],
-          },
-        ],
-        order: [["updatedAt", "ASC"]],
-      });
-      res.status(200).send(payment);
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getPaymentSortDesc: async (req, res) => {
-    try {
-      let payment = await Payments.findAll({
-        include: [
-          {
-            model: Invoice_Headers,
-            required: true,
-            include: [
-              {
-                model: Invoice_Details,
-                required: true,
-              },
-              {
-                model: Warehouses,
-                required: true,
-              },
-              {
-                model: User_Addresses,
-                required: true,
-              },
-              {
-                model: Users,
-                required: true,
-              },
-            ],
-          },
-        ],
-        order: [["updatedAt", "DESC"]],
-      });
-      res.status(200).send(payment);
-    } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },

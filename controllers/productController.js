@@ -121,10 +121,49 @@ module.exports = {
   deleteProduct: async (req, res) => {
     // Products.sync({ alter: true });
     try {
+      let { page, size } = req.query;
+      if (!page) {
+        page = 1;
+      }
+      if (!size) {
+        size = 10;
+      }
+      const limit = +10;
+      const skip = (page - 1) * size;
       let id = req.params.id;
       await Products.destroy({ where: { id: id } });
-      res.status(200).send("Product Has Been Deleted");
+
+      await Warehouse_Products.destroy({
+        where: { productId: id },
+      });
+      const { rows, count } = await Products.findAndCountAll({
+        nested: true,
+        offset: skip,
+        limit: limit,
+        include: [
+          { model: Product_Categories },
+          { model: Warehouse_Products, include: Warehouses },
+        ],
+        attributes: [
+          "id",
+          "product_image",
+          "name",
+          "description",
+          "price",
+          "productCategoryId",
+          [
+            sequelize.literal(
+              `(SELECT sum(stock_ready) from warehouse_products WHERE warehouse_products.productId = products.id)`
+            ),
+            "totalStock",
+          ],
+        ],
+      });
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },

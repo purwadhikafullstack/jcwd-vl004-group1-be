@@ -20,5 +20,6 @@ router.post("/add", cartController.addUserCart);
 router.post("/checkout", cartController.submitCheckout);
 router.post("/delete/:id", cartController.deleteUserCart);
 router.post("/canceltransaction", cartController.cancelTransactions);
+router.post("/history", cartController.getHistoryTransaction);
 
 module.exports = router;

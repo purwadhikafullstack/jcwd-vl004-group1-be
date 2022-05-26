@@ -12,6 +12,7 @@ const Warehouse_Products = require("../models/Warehouse_Products");
 module.exports = {
   getPayment: async (req, res) => {
     try {
+      let { sortValue } = req.body;
       let payment = await Payments.findAll({
         include: [
           {
@@ -37,10 +38,12 @@ module.exports = {
             ],
           },
         ],
-        order: [["id", "ASC"]],
+        order: [sortValue.split(",")],
       });
+      console.log(payment);
       res.status(200).send(payment);
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },

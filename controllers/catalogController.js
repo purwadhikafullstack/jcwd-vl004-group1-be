@@ -6,12 +6,10 @@ const Warehouses = require("../models/Warehouses");
 
 module.exports = {
   getProducts: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let products = await Products.findAll({
-        order: [
-          ['createdAt', 'DESC'],
-        ],
+        order: [["createdAt", "DESC"]],
         include: {
           model: Warehouse_Products,
           Warehouses,
@@ -25,21 +23,23 @@ module.exports = {
     }
   },
   getProductById: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let id = req.params.id;
-      let product = await Products.findOne({ where: { id: id },
+      let product = await Products.findOne({
+        where: { id: id },
         include: {
           model: Warehouse_Products,
-        }, });
+        },
+      });
       res.status(200).send(product);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       res.status(500).send(err);
     }
   },
   getProductByName: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let product = await Products.findAll({
         include: [
@@ -59,7 +59,7 @@ module.exports = {
     }
   },
   getCategories: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let categories = await Product_Categories.findAll({});
       res.status(200).send(categories);
@@ -68,29 +68,28 @@ module.exports = {
     }
   },
   getCategoryById: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let id = req.params.id;
-      let product = await Products.findAll({ where: { productCategoryId : id },
+      let product = await Products.findAll({
+        where: { productCategoryId: id },
         include: {
           model: Warehouse_Products,
           Warehouses,
           Product_Categories,
           // showing only the name that you want to view
         },
-       });
+      });
       res.status(200).send(product);
     } catch (err) {
       res.status(500).send(err);
     }
   },
   sortAZ: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let products = await Products.findAll({
-        order: [
-          ['name', 'ASC'],
-        ],
+        order: [["name", "ASC"]],
         include: {
           model: Warehouse_Products,
         },
@@ -101,12 +100,10 @@ module.exports = {
     }
   },
   sortZA: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let products = await Products.findAll({
-        order: [
-          ['name', 'DESC'],
-        ],
+        order: [["name", "DESC"]],
         include: {
           model: Warehouse_Products,
         },
@@ -117,12 +114,10 @@ module.exports = {
     }
   },
   highPrice: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let products = await Products.findAll({
-        order: [
-          ['price', 'DESC'],
-        ],
+        order: [["price", "DESC"]],
         include: {
           model: Warehouse_Products,
         },
@@ -133,12 +128,10 @@ module.exports = {
     }
   },
   lowPrice: async (req, res) => {
-    Products.sync({ alter: true });
+    // Products.sync({ alter: true });
     try {
       let products = await Products.findAll({
-        order: [
-          ['price', 'ASC'],
-        ],
+        order: [["price", "ASC"]],
         include: {
           model: Warehouse_Products,
         },

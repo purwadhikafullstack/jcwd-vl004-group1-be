@@ -25,9 +25,9 @@ const PORT = process.env.PORT || 9990;
 
 (async () => {
   try {
-    await sequelize.authenticate();
+    // await sequelize.authenticate();
     // buat sync database kalau ada perubahan sekecil apapun:
-    await sequelize.sync({ alter: true });
+    // await sequelize.sync({ alter: true });
     console.log("Sequelize Connection established");
   } catch (err) {
     console.log(err);
@@ -44,6 +44,7 @@ app.use("/products", productRouter);
 app.use("/carts", cartRouter);
 app.use("/catalog", catalogRouter);
 app.use("/images", express.static("./images"));
+app.use("/images-proof", express.static("./images-proof"));
 app.use("/users", userRouter);
 app.use("/warehouses", warehouseRouter);
 app.use("/paymentsConfirmation", paymentConfirmationRouter);

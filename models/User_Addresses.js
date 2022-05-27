@@ -6,7 +6,7 @@ const User_Addresses = sequelize.define(
   {
     address_line: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     address_type: {
       type: DataTypes.STRING,
@@ -14,11 +14,11 @@ const User_Addresses = sequelize.define(
     },
     province: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     city: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     district: {
       type: DataTypes.STRING,
@@ -38,6 +38,14 @@ const User_Addresses = sequelize.define(
     },
     isDefault: {
       type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.DOUBLE,
       allowNull: true,
     },
   },

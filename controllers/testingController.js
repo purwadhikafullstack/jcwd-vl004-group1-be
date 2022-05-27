@@ -9,7 +9,6 @@ const Warehouse_Products = require("../models/Warehouse_Products");
 
 module.exports = {
   getTransaction: async (req, res) => {
-    Transactions.sync({ alter: true });
     try {
       let allTransactions = await Transactions.findAll({
         include: [
@@ -47,7 +46,6 @@ module.exports = {
     }
   },
   getTransactionById: async (req, res) => {
-    Transactions.sync({ alter: true });
     try {
       let id = req.params.id;
       let transactionsId = await Transactions.findOne({

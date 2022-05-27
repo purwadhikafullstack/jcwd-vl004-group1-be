@@ -18,6 +18,7 @@
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.1",
     "express": "^4.17.3",
+    "geolib": "^3.3.3",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",

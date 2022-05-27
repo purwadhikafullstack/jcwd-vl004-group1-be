@@ -21,6 +21,3 @@ const Invoice_Details = sequelize.define("invoice_details", {
 });
 
 module.exports = Invoice_Details;
-
-Warehouses.hasOne(Invoice_Details);
-Invoice_Details.belongsTo(Warehouses);

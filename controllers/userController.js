@@ -15,7 +15,7 @@ const { Op } = require("sequelize");
 
 module.exports = {
   getUsers: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       let users = await Users.findAll({});
       res.status(200).send(users);
@@ -38,7 +38,7 @@ module.exports = {
     }
   },
   register: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       const { full_name, username, email, phone, password } = req.body;
       const usernameAlreadyExist = await Users.findOne({ where: { username } });
@@ -100,7 +100,7 @@ module.exports = {
     }
   },
   verification: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       const updateVerification = await Users.update(
         {
@@ -122,7 +122,7 @@ module.exports = {
     }
   },
   login: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       const { email, password } = req.body;
 
@@ -170,7 +170,7 @@ module.exports = {
     }
   },
   getDataUser: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       let user = await Users.findOne({
         where: {
@@ -188,12 +188,12 @@ module.exports = {
       });
       res.status(200).send(user);
     } catch (err) {
-      console.log(err)
+      console.log(err);
       res.status(err.code).send("Error Keep Login: " + err.message);
     }
   },
   forgotPassword: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       let email = req.body.email;
       const emailExist = await Users.findOne({ where: { email: email } });
@@ -241,7 +241,7 @@ module.exports = {
     }
   },
   recoverPassword: async (req, res) => {
-    Users.sync({ alter: true });
+    // Users.sync({ alter: true });
     try {
       console.log(req.user);
       console.log(req.body);
@@ -268,7 +268,7 @@ module.exports = {
     }
   },
   getAddressesByUserId: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
       let id = req.params.id;
       let addresses = await User_Addresses.findAll({
@@ -283,6 +283,7 @@ module.exports = {
   },
   addUserAddress: async (req, res) => {
     try {
+      const { userId } = req.body;
       let data = {
         address_line: req.body.address_line,
         address_type: req.body.address_type,
@@ -294,16 +295,21 @@ module.exports = {
         mobile: req.body.mobile,
         userId: req.body.userId,
         isDefault: req.body.isDefault,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
       };
       const address = await User_Addresses.create(data);
-      res.status(200).send(address);
+      const getAddresses = await User_Addresses.findAll({
+        where: { userId },
+      });
+      res.status(200).send({ address, getAddresses });
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
     }
   },
   getProvinces: async (req, res) => {
-    Provinces.sync({ alter: true });
+    // Provinces.sync({ alter: true });
     try {
       console.log("hi");
       let provinces = await Provinces.findAll({
@@ -399,7 +405,7 @@ module.exports = {
     }
   },
   getDefaultAddress: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
       const defaultAddress = await User_Addresses.findOne({
         where: {
@@ -413,21 +419,37 @@ module.exports = {
     }
   },
   updateDefaultAddress: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
-      const defaultAddress = await User_Addresses.update(req.body, {
-        where: {
-          isDefault: true,
-        },
+      const { id } = req.body;
+      const { userId } = req.body;
+      await User_Addresses.update(
+        { isDefault: false },
+        {
+          where: {
+            isDefault: true,
+          },
+        }
+      );
+      await User_Addresses.update(
+        { isDefault: true },
+        {
+          where: {
+            id,
+          },
+        }
+      );
+      const getUserAddresses = await User_Addresses.findAll({
+        where: { userId },
       });
-      res.status(200).send(defaultAddress);
+      res.status(200).send(getUserAddresses);
     } catch (err) {
       res.status(500).send(err);
       console.log(err);
     }
   },
   getAddressById: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
       let id = req.params.id;
       let user = await User_Addresses.findOne({
@@ -443,12 +465,15 @@ module.exports = {
   deleteUserAddress: async (req, res) => {
     try {
       let id = req.params.id;
-      // let { userId } = req.body;
+      const { userId } = req.body;
       await User_Addresses.destroy({ where: { id: id } });
-      // const getUserAddress = await User_Addresses.findAll({
-      //   where: { userId },
-      // });
-      res.status(200).send("User Address Deleted");
+
+      const getUserAddresses = await User_Addresses.findAll({
+        where: { userId },
+      });
+      console.log(userId);
+      console.log(getUserAddresses);
+      res.status(200).send(getUserAddresses);
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
@@ -483,26 +508,11 @@ module.exports = {
     }
   },
   getDefaultAddress: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
+      const { userId } = req.body;
       const defaultAddress = await User_Addresses.findOne({
-        where: {
-          isDefault: true,
-        },
-      });
-      res.status(200).send(defaultAddress);
-    } catch (err) {
-      res.status(500).send(err);
-      console.log(err);
-    }
-  },
-  updateDefaultAddress: async (req, res) => {
-    User_Addresses.sync({ alter: true });
-    try {
-      const defaultAddress = await User_Addresses.update(req.body, {
-        where: {
-          isDefault: true,
-        },
+        where: { isDefault: true, userId },
       });
       res.status(200).send(defaultAddress);
     } catch (err) {
@@ -511,7 +521,7 @@ module.exports = {
     }
   },
   getAddressById: async (req, res) => {
-    User_Addresses.sync({ alter: true });
+    // User_Addresses.sync({ alter: true });
     try {
       let id = req.params.id;
       let user = await User_Addresses.findOne({
@@ -521,20 +531,6 @@ module.exports = {
       });
       res.status(200).send(user);
     } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  deleteUserAddress: async (req, res) => {
-    try {
-      let id = req.params.id;
-      // let { userId } = req.body;
-      await User_Addresses.destroy({ where: { id: id } });
-      // const getUserAddress = await User_Addresses.findAll({
-      //   where: { userId },
-      // });
-      res.status(200).send("User Address Deleted");
-    } catch (err) {
-      console.log(err);
       res.status(500).send(err);
     }
   },

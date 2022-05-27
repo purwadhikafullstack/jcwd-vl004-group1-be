@@ -8,7 +8,16 @@ const Cities = sequelize.define(
     name: {
       type: DataTypes.STRING,
     },
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allownull: true,
+    },
+    longitude: {
+      type: DataTypes.DOUBLE,
+      allownull: true,
+    },
   },
+
   {
     timestamps: false,
   }

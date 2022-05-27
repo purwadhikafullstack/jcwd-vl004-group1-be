@@ -10,7 +10,6 @@ const sequelize = require("../lib/sequelize");
 
 module.exports = {
   getWarehouses: async (req, res) => {
-    Warehouses.sync({ alter: true });
     try {
       let warehouses = await Warehouses.findAll({
         order: [["id", "DESC"]],
@@ -21,7 +20,6 @@ module.exports = {
     }
   },
   getWarehouseById: async (req, res) => {
-    Warehouses.sync({ alter: true });
     try {
       let id = req.params.id;
       let warehouses = await Warehouses.findAll({
@@ -33,7 +31,6 @@ module.exports = {
     }
   },
   addWarehouse: async (req, res) => {
-    Warehouses.sync({ alter: true });
     try {
       let data = {
         name: req.body.name,
@@ -42,6 +39,8 @@ module.exports = {
         province: req.body.province,
         postal_code: req.body.postal_code,
         phone: req.body.phone,
+        latitude: req.body.latitude,
+        longitude: req.body.longitude,
       };
       const warehouse = await Warehouses.create(data);
       res.status(200).send(warehouse);
@@ -52,7 +51,6 @@ module.exports = {
     console.log(req.file);
   },
   updateWarehouse: async (req, res) => {
-    Warehouses.sync({ alter: true });
     try {
       let id = req.params.id;
       const warehouse = await Warehouses.update(req.body, {
@@ -64,7 +62,6 @@ module.exports = {
     }
   },
   addProduct: async (req, res) => {
-    // Warehouses.sync({ alter: true });
     try {
       let data = {
         stock_ready: req.body.stock_ready,
@@ -81,7 +78,6 @@ module.exports = {
     console.log(req.file);
   },
   updateProduct: async (req, res) => {
-    Warehouse_Products.sync({ alter: true });
     try {
       let id = req.params.id;
       const warehouse = await Warehouse_Products.update(req.body, {
@@ -93,7 +89,6 @@ module.exports = {
     }
   },
   deleteProduct: async (req, res) => {
-    // Products.sync({ alter: true });
     try {
       let id = req.params.id;
       await Warehouse_Products.destroy({ where: { id: id } });
@@ -103,7 +98,6 @@ module.exports = {
     }
   },
   getWarehouseProductById: async (req, res) => {
-    Warehouse_Products.sync({ alter: true });
     try {
       let id = req.params.id;
       let warehouses = await Warehouse_Products.findAll({
@@ -117,7 +111,6 @@ module.exports = {
     }
   },
   getAllWarehouseProductById: async (req, res) => {
-    Warehouse_Products.sync({ alter: true });
     try {
       let id = req.params.id;
       let warehouses = await Warehouse_Products.findAll({
@@ -130,7 +123,6 @@ module.exports = {
     }
   },
   addShipping: async (req, res) => {
-    // Shipping_Product.sync({ alter: true });
     try {
       let data = {
         status: "requested",
@@ -149,7 +141,6 @@ module.exports = {
     console.log(req.file);
   },
   updateShipping: async (req, res) => {
-    // Shipping_Product.sync({ alter: true });
     try {
       let id = req.params.id;
       const shipping = await Shipping_Product.update(req.body, {
@@ -161,7 +152,6 @@ module.exports = {
     }
   },
   deleteShipping: async (req, res) => {
-    // Products.sync({ alter: true });
     try {
       let id = req.params.id;
       await Shipping_Product.destroy({ where: { id: id } });
@@ -171,7 +161,6 @@ module.exports = {
     }
   },
   getShippingById: async (req, res) => {
-    Shipping_Product.sync({ alter: true });
     try {
       let id = req.params.id;
       let shipping = await Shipping_Product.findAll({
@@ -189,7 +178,6 @@ module.exports = {
     }
   },
   addOperationalCost: async (req, res) => {
-    // Warehouses.sync({ alter: true });
     try {
       let data = {
         cost: req.body.cost,
@@ -206,7 +194,6 @@ module.exports = {
     console.log(req.file);
   },
   updateOperationalCost: async (req, res) => {
-    Warehouse_Products.sync({ alter: true });
     try {
       let id = req.params.id;
       const opcost = await Operational_Cost.update(req.body, {
@@ -218,7 +205,6 @@ module.exports = {
     }
   },
   deleteOperationalCost: async (req, res) => {
-    // Products.sync({ alter: true });
     try {
       let id = req.params.id;
       await Operational_Cost.destroy({ where: { id: id } });
@@ -228,7 +214,6 @@ module.exports = {
     }
   },
   getOperationalCost: async (req, res) => {
-    Warehouse_Products.sync({ alter: true });
     try {
       let id = req.params.id;
       let opcost = await Operational_Cost.findAll({

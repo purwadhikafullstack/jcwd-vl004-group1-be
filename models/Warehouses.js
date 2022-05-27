@@ -1,5 +1,6 @@
 const sequelize = require("../lib/sequelize");
 const { DataTypes } = require("sequelize");
+const Invoice_Details = require("./Invoice_Details");
 
 const Warehouses = sequelize.define(
   "warehouses",
@@ -28,6 +29,14 @@ const Warehouses = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    latitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
+    longitude: {
+      type: DataTypes.DOUBLE,
+      allowNull: true,
+    },
   },
   {
     timestamps: false,
@@ -35,3 +44,6 @@ const Warehouses = sequelize.define(
 );
 
 module.exports = Warehouses;
+
+Warehouses.hasOne(Invoice_Details);
+Invoice_Details.belongsTo(Warehouses);

@@ -28,8 +28,25 @@ module.exports = {
           { model: Product_Categories },
           { model: Warehouse_Products, include: Warehouses },
         ],
+        attributes: [
+          "id",
+          "product_image",
+          "name",
+          "description",
+          "price",
+          "productCategoryId",
+          [
+            sequelize.literal(
+              `(SELECT sum(stock_ready) from warehouse_products WHERE warehouse_products.productId = products.id)`
+            ),
+            "totalStock",
+          ],
+        ],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -104,10 +121,49 @@ module.exports = {
   deleteProduct: async (req, res) => {
     // Products.sync({ alter: true });
     try {
+      let { page, size } = req.query;
+      if (!page) {
+        page = 1;
+      }
+      if (!size) {
+        size = 10;
+      }
+      const limit = +10;
+      const skip = (page - 1) * size;
       let id = req.params.id;
       await Products.destroy({ where: { id: id } });
-      res.status(200).send("Product Has Been Deleted");
+
+      await Warehouse_Products.destroy({
+        where: { productId: id },
+      });
+      const { rows, count } = await Products.findAndCountAll({
+        nested: true,
+        offset: skip,
+        limit: limit,
+        include: [
+          { model: Product_Categories },
+          { model: Warehouse_Products, include: Warehouses },
+        ],
+        attributes: [
+          "id",
+          "product_image",
+          "name",
+          "description",
+          "price",
+          "productCategoryId",
+          [
+            sequelize.literal(
+              `(SELECT sum(stock_ready) from warehouse_products WHERE warehouse_products.productId = products.id)`
+            ),
+            "totalStock",
+          ],
+        ],
+      });
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },
@@ -148,7 +204,13 @@ module.exports = {
           },
         },
       });
-      res.status(200).send({ rows, count });
+
+      count = 1;
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
       console.log(err);
@@ -177,7 +239,11 @@ module.exports = {
         ],
         order: [["name", "ASC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
@@ -205,7 +271,11 @@ module.exports = {
         ],
         order: [["name", "DESC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -231,7 +301,11 @@ module.exports = {
         ],
         order: [["price", "ASC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }
@@ -257,7 +331,11 @@ module.exports = {
         ],
         order: [["price", "DESC"]],
       });
-      res.status(200).send({ rows, count });
+
+      let productCount = await Products.findAll({});
+      productCount = productCount.length;
+
+      res.status(200).send({ rows, count, productCount });
     } catch (err) {
       res.status(500).send(err);
     }

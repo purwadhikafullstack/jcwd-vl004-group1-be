@@ -618,10 +618,18 @@ module.exports = {
       });
 
       selectedInvoiceData.forEach(async (item) => {
-        await Warehouse_Products.update(
+        await Warehouse_Products.decrement(
           {
-            stock_reserved:
-              item.product.warehouse_products[0].stock_reserved - item.quantity,
+            stock_reserved: item.quantity,
+          },
+          {
+            where: { productId: item.productId, warehouseId: item.warehouseId },
+          }
+        );
+
+        await Warehouse_Products.increment(
+          {
+            stock_ready: item.quantity,
           },
           {
             where: { productId: item.productId, warehouseId: item.warehouseId },

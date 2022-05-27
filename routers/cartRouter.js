@@ -21,5 +21,6 @@ router.post("/checkout", cartController.submitCheckout);
 router.post("/delete/:id", cartController.deleteUserCart);
 router.post("/canceltransaction", cartController.cancelTransactions);
 router.post("/history", cartController.getHistoryTransaction);
+router.patch("/updatedelivery", cartController.updateDelivery);
 
 module.exports = router;

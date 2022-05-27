@@ -223,7 +223,8 @@ module.exports = {
           .send({ message: "Change Status Success!", success: true });
       }
     } catch (err) {
-      res.status(err.code).send("Error Transaction: " + err.message);
+      console.log(err);
+      res.status(500).send("Error Transaction: " + err.message);
     }
   },
   changeTransactionStatus: async (req, res) => {

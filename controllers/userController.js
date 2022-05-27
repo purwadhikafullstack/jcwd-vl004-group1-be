@@ -85,7 +85,7 @@ module.exports = {
         from: `Admin <play.auronempire@gmail.com>`,
         to: `${newUser.dataValues.email}`,
         subject: `Account Verification for ${newUser.dataValues.full_name}`,
-        html: `<a href='http://localhost:3000/authentication/${token}'>Click here to verify your Account.</a>`,
+        html: `<a href='https://jcwd-vl004-group1.netlify.app/authentication/${token}'>Click here to verify your Account.</a>`,
       };
 
       // send mail
@@ -212,7 +212,7 @@ module.exports = {
           <p>You can reset the password for your account by using the information below:</p>
           <p>Username: ${emailExist.dataValues.username}<br>
           Email: ${emailExist.dataValues.email}<br>
-          Password reset link: <a href='http://localhost:3000/recoverpassword/${token}'>here</a></p>
+          Password reset link: <a href='https://jcwd-vl004-group1.netlify.app/recoverpassword/${token}'>here</a></p>
           -- Website Support --
           `,
         };

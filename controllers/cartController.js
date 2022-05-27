@@ -344,6 +344,24 @@ module.exports = {
         include: { model: Products, include: Warehouse_Products },
       });
 
+      let invalidCart;
+
+      cartItems.forEach((item) => {
+        if (
+          item.product.warehouse_products.some(
+            (warehouse_product) => warehouse_product.stock_ready < item.quantity
+          )
+        ) {
+          invalidCart = true;
+        }
+      });
+
+      if (invalidCart) {
+        return res.send({
+          conflict: "Stock Ready has been updated, check your cart items.",
+        });
+      }
+
       // itung dulu jarak antar warehouse yang paling terdekat.
 
       let id = req.params.id;

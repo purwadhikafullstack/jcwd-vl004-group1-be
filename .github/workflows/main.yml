@@ -1,0 +1,29 @@
+# Konfigurasi Continuos Deployment
+name : CD JCWDVL-04 Group 1 
+
+on : 
+  push :
+    branches :
+      - development
+      
+jobs :
+  cd:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Deploy Attendance API with github action
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{secrets.SSH_HOST}}
+          username: ${{secrets.SSH_USER}}
+          key: ${{secrets.SSH_KEY}}
+          port: 22
+          script: |
+            cd JCVL-04/jcwd-vl004-group1-be
+            git add .
+            git commit -m "VL-00-server : server commit modified file"
+            git pull origin development
+            npm install
+            pm2 restart api-group1

@@ -51,8 +51,7 @@ module.exports = {
           { model: Shipment_Masters },
           { model: Payment_Options },
         ],
-        where: { userId },
-        status: "unpaid",
+        where: { userId, status: "unpaid" },
       });
 
       if (unpaidInvoice) {
@@ -481,11 +480,25 @@ module.exports = {
             },
           }
         );
+        Warehouse_Products.decrement(
+          {
+            stock_ready: item.quantity,
+          },
+          {
+            where: {
+              warehouseId: result[0],
+              productId: item.productId,
+            },
+          }
+        );
 
         Invoice_Details.update(
           { warehouseId: result[0] },
           {
-            where: { productId: item.productId },
+            where: {
+              productId: item.productId,
+              invoiceheaderId: invoiceHeader.id,
+            },
           }
         );
 
@@ -625,6 +638,62 @@ module.exports = {
       });
 
       res.status(200).send(selectedInvoiceData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  },
+  getHistoryTransaction: async (req, res) => {
+    try {
+      let { page, size } = req.query;
+      if (!page) {
+        page = 1;
+      }
+      if (!size) {
+        size = 10;
+      }
+      const limit = +10;
+      const skip = (page - 1) * size;
+      const { userId } = req.body;
+      const { rows, count } = await Invoice_Headers.findAndCountAll({
+        nested: true,
+        offset: skip,
+        limit: limit,
+        where: {
+          userId,
+        },
+        include: {
+          model: Invoice_Details,
+          attributes: [
+            "price",
+            "quantity",
+            "subtotal",
+            "warehouseId",
+            "productId",
+          ],
+          include: Products,
+        },
+      });
+      let transactionCount = await Invoice_Headers.findAll({
+        where: { userId },
+      });
+      transactionCount = transactionCount.length;
+      res.status(200).send({ rows, count, transactionCount });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  },
+  updateDelivery: async (req, res) => {
+    try {
+      const id = req.body.id;
+      await Invoice_Headers.update(
+        { status: "delivered" },
+        {
+          where: { id: id },
+        }
+      );
+      res.status(200).send("Invoice has been updated");
     } catch (err) {
       console.log(err);
       res.status(500).send(err);

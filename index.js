@@ -44,6 +44,7 @@ app.use("/products", productRouter);
 app.use("/carts", cartRouter);
 app.use("/catalog", catalogRouter);
 app.use("/images", express.static("./images"));
+app.use("/images-proof", express.static("./images-proof"));
 app.use("/users", userRouter);
 app.use("/warehouses", warehouseRouter);
 app.use("/paymentsConfirmation", paymentConfirmationRouter);

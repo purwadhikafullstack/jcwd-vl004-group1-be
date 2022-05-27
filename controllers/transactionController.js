@@ -11,6 +11,7 @@ const Warehouse_Products = require("../models/Warehouse_Products");
 module.exports = {
   getTransaction: async (req, res) => {
     try {
+      let { sortValue } = req.body;
       let allTransactions = await Transactions.findAll({
         include: [
           {
@@ -36,78 +37,11 @@ module.exports = {
             ],
           },
         ],
-        order: [["id", "ASC"]],
+        order: [sortValue.split(",")],
       });
       res.status(200).send(allTransactions);
     } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getTransactionSortAsc: async (req, res) => {
-    try {
-      let allTransactions = await Transactions.findAll({
-        include: [
-          {
-            model: Invoice_Headers,
-            required: true,
-            include: [
-              {
-                model: Invoice_Details,
-                required: true,
-              },
-              {
-                model: Warehouses,
-                required: true,
-              },
-              {
-                model: User_Addresses,
-                required: true,
-              },
-              {
-                model: Users,
-                required: true,
-              },
-            ],
-          },
-        ],
-        order: [["updatedAt", "ASC"]],
-      });
-      res.status(200).send(allTransactions);
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getTransactionSortDesc: async (req, res) => {
-    try {
-      let allTransactions = await Transactions.findAll({
-        include: [
-          {
-            model: Invoice_Headers,
-            required: true,
-            include: [
-              {
-                model: Invoice_Details,
-                required: true,
-              },
-              {
-                model: Warehouses,
-                required: true,
-              },
-              {
-                model: User_Addresses,
-                required: true,
-              },
-              {
-                model: Users,
-                required: true,
-              },
-            ],
-          },
-        ],
-        order: [["updatedAt", "DESC"]],
-      });
-      res.status(200).send(allTransactions);
-    } catch (err) {
+      console.log(err);
       res.status(500).send(err);
     }
   },
@@ -145,7 +79,7 @@ module.exports = {
       });
 
       let warehouseId = transactionsId.dataValues.invoice_header.warehouseId;
-      console.log(warehouseId);
+      console.log(transactionsId.dataValues.invoice_header);
 
       let warehouseInventory = await Warehouse_Products.findAll({
         where: { warehouseId: warehouseId },
@@ -247,9 +181,7 @@ module.exports = {
             currentInventoryItem = item;
           }
         });
-        console.log(item.quantity);
-        console.log(currentInventoryItem.stock_reserved);
-
+        console.log(currentInventoryItem);
         if (currentInventoryItem.stock_reserved < item.quantity) {
           console.log("Item Kurang");
           insufficientStock = true;
@@ -291,9 +223,9 @@ module.exports = {
           .send({ message: "Change Status Success!", success: true });
       }
     } catch (err) {
-      res.status(err.code).send("Error Transaction: " + err.message);
+      console.log(err);
+      res.status(500).send("Error Transaction: " + err.message);
     }
-    // console.log(items);
   },
   changeTransactionStatus: async (req, res) => {
     try {
@@ -368,10 +300,9 @@ module.exports = {
         let newStock = stockReserved - invoiceDetails[i].quantity;
 
         // patch ke datawarehouse dengan id getdatawarehouse.id
-
         await Warehouse_Products.update(
           {
-            stock_ready: newStock,
+            // stock_ready: newStock,
             stock_reserved: newStock,
           },
           {
@@ -442,11 +373,14 @@ module.exports = {
         });
 
         let stockReady = getProduct.stock_ready;
-        let newStock = stockReady + invoiceDetails[i].quantity;
+        let stockReserved = getProduct.stock_reserved;
+        let newStockReady = stockReady + invoiceDetails[i].quantity;
+        let newStockReserved = stockReserved - invoiceDetails[i].quantity;
 
         await Warehouse_Products.update(
           {
-            stock_ready: newStock,
+            stock_ready: newStockReady,
+            stock_reserved: newStockReserved,
           },
           {
             where: {

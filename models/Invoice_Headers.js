@@ -21,7 +21,7 @@ const Invoice_Headers = sequelize.define("invoice_headers", {
     allowNull: false,
     validate: {
       isIn: {
-        args: [["unpaid", "pending", "approved", "rejected"]],
+        args: [["unpaid", "pending", "approved", "rejected", "delivered"]],
         msg: "Wrong Value!",
       },
     },

@@ -51,8 +51,7 @@ module.exports = {
           { model: Shipment_Masters },
           { model: Payment_Options },
         ],
-        where: { userId },
-        status: "unpaid",
+        where: { userId, status: "unpaid" },
       });
 
       if (unpaidInvoice) {
@@ -680,6 +679,21 @@ module.exports = {
       });
       transactionCount = transactionCount.length;
       res.status(200).send({ rows, count, transactionCount });
+    } catch (err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  },
+  updateDelivery: async (req, res) => {
+    try {
+      const id = req.body.id;
+      await Invoice_Headers.update(
+        { status: "delivered" },
+        {
+          where: { id: id },
+        }
+      );
+      res.status(200).send("Invoice has been updated");
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
